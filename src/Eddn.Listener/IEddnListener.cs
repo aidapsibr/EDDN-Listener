@@ -16,6 +16,6 @@ namespace Eddn.Listener
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="cancellationAndTimeOutSeconds">The cancellation and time out seconds.</param>
         /// <returns>The management thread as a task.</returns>
-        Task BeginListener(Action<string> callback, CancellationToken cancellationToken = default(CancellationToken), int cancellationAndTimeOutSeconds = 30);
+        void BeginListener(Action<string> callback, CancellationToken cancellationToken = default(CancellationToken), int cancellationAndTimeOutSeconds = 30);
     }
 }
