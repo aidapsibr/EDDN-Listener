@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>Donovan Crone, Michael Davidson</authors>
+    <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+    <projectUrl>http://github.com/psibernetic/EDDN-Listener</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <copyright>Copyright 2015</copyright>
+    <tags>EDDN Elite EliteDangerous</tags>
+    <dependencies>
+      <dependency id="ZeroMQ" version="4.1.0" />
+      <dependency id="DotNetZip" version="1.9.3" />
+    </dependencies>
+  </metadata>
+
+  <files>
+    <file src="amd64\*.dll" target="build\amd64" />
+    <file src="i386\*.dll" target="build\i386" />
+    <file src="Eddn.Listener.targets" target="build" />
+  </files>
+</package>

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Ionic.Zlib;
 using ZeroMQ;
 
-namespace Eddn.Sdk
+namespace Eddn.Listener
 {
     public class EddnListener : IEddnListener
     {

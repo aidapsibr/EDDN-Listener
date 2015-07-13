@@ -2,10 +2,19 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Eddn.Sdk
+namespace Eddn.Listener
 {
+    /// <summary>
+    /// Interface IEddnListener
+    /// </summary>
     public interface IEddnListener
     {
+        /// <summary>
+        /// Begins the listener.
+        /// </summary>
+        /// <param name="callback">The callback to execute when a message is received.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The management thread as a task.</returns>
         Task BeginListener(Action<string> callback, CancellationToken cancellationToken = default(CancellationToken));
     }
 }
