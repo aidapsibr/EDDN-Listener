@@ -10,6 +10,7 @@ namespace Eddn.Listener
     public class EddnListener : IEddnListener
     {
         protected readonly string Endpoint;
+        protected Action<string> LogMethod;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EddnListener"/> class.
@@ -25,11 +26,17 @@ namespace Eddn.Listener
         /// </summary>
         /// <param name="endpoint">The EDDN endpoint.</param>
         /// <returns>IEddnListener.</returns>
-        public static IEddnListener Create(string endpoint = "tcp://eddn-relay.elite-markets.net:9500")
+        public static EddnListener Create(string endpoint = "tcp://eddn-relay.elite-markets.net:9500")
         {
             return new EddnListener(endpoint);
         }
 
+        public IEddnListener AddLogMethod(Action<string> logMethod)
+        {
+            LogMethod = logMethod ?? (message => { });
+
+            return this;
+        }
 
         /// <summary>
         /// Attempts to receive a message.
@@ -47,10 +54,10 @@ namespace Eddn.Listener
                 }
                 catch (ZException zex)
                 {
-                    if (zex.ErrNo == 11) //Exceeded Timeout
-                        return null;
+                    if (zex.ErrNo != 11) throw;
 
-                    throw;
+                    LogMethod("No message this round...");
+                    return null;
                 }
             }, cancellationToken);
 
@@ -92,12 +99,18 @@ namespace Eddn.Listener
                     subscriber.Subscribe("");
                     subscriber.ReceiveTimeout = new TimeSpan(0, 0, 30);
 
+                    LogMethod("Connected and subscribed.");
+
                     while (!cancellationToken.IsCancellationRequested)
                     {
                         var message = await ReceiveMessage(subscriber, cancellationToken);
 
                         if (message != null)
-                            Task.Run(() => callback(message), cancellationToken).Start();
+                            Task.Run(() =>
+                            {
+                                LogMethod("Found message, activating callback.");
+                                callback(message);
+                            }, cancellationToken).Start();
                     }
                 }
             }, cancellationToken);
