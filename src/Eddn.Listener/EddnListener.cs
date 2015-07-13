@@ -50,6 +50,7 @@ namespace Eddn.Listener
             {
                 try
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     return subscriber.ReceiveFrame();
                 }
                 catch (ZException zex)
@@ -87,17 +88,18 @@ namespace Eddn.Listener
         /// </summary>
         /// <param name="callback">The callback to execute when a message is received.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationAndTimeOutSeconds">The cancellation and time out seconds.</param>
         /// <returns>The management thread as a task.</returns>
-        public Task BeginListener(Action<string> callback, CancellationToken cancellationToken = default(CancellationToken))
+        public void BeginListener(Action<string> callback, CancellationToken cancellationToken = default(CancellationToken), int cancellationAndTimeOutSeconds = 30)
         {
-            return Task.Run(async () =>
+            Task.Run(async () =>
             {
                 using (var ztx = new ZContext())
                 using (var subscriber = new ZSocket(ztx, ZSocketType.SUB))
                 {
                     subscriber.Connect(Endpoint);
                     subscriber.Subscribe("");
-                    subscriber.ReceiveTimeout = new TimeSpan(0, 0, 30);
+                    subscriber.ReceiveTimeout = TimeSpan.FromSeconds(cancellationAndTimeOutSeconds);
 
                     LogMethod("Connected and subscribed.");
 
