@@ -51,6 +51,7 @@
     <Compile Include="EddnListener.cs" />
     <Compile Include="IEddnListener.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TaskExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="amd64\libsodium.so" />

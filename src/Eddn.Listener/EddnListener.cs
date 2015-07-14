@@ -50,14 +50,14 @@ namespace Eddn.Listener
             {
                 try
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
+                    LogMethod("Awaiting message");
                     return subscriber.ReceiveFrame();
                 }
                 catch (ZException zex)
                 {
                     if (zex.ErrNo != 11) throw;
 
-                    LogMethod("No message this round...");
+                    LogMethod("No message this round");
                     return null;
                 }
             }, cancellationToken);
@@ -97,23 +97,28 @@ namespace Eddn.Listener
                 using (var ztx = new ZContext())
                 using (var subscriber = new ZSocket(ztx, ZSocketType.SUB))
                 {
-                    subscriber.Connect(Endpoint);
-                    subscriber.Subscribe("");
+                    subscriber.Subscribe("");                    
                     subscriber.ReceiveTimeout = TimeSpan.FromSeconds(cancellationAndTimeOutSeconds);
+
 
                     LogMethod("Connected and subscribed.");
 
                     while (!cancellationToken.IsCancellationRequested)
                     {
+                        subscriber.Connect(Endpoint);
                         var message = await ReceiveMessage(subscriber, cancellationToken);
 
                         if (message != null)
                             Task.Run(() =>
-                            {
-                                LogMethod("Found message, activating callback.");
-                                callback(message);
-                            }, cancellationToken).Start();
+                             {
+                                 LogMethod("Found message, activating callback.");
+                                 callback(message);
+                             }, cancellationToken).FireAndForget();
                     }
+
+                    subscriber.Disconnect(Endpoint);
+                    subscriber.Close();
+                    subscriber.Dispose();
                 }
             }, cancellationToken);
         }
