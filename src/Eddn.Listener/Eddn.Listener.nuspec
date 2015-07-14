@@ -11,12 +11,7 @@
     <description>$description$</description>
     <copyright>Copyright 2015</copyright>
     <tags>EDDN Elite EliteDangerous</tags>
-    <dependencies>
-      <dependency id="ZeroMQ" version="4.1.0" />
-      <dependency id="DotNetZip" version="1.9.3" />
-    </dependencies>
   </metadata>
-
   <files>
     <file src="amd64\*.dll" target="build\amd64" />
     <file src="i386\*.dll" target="build\i386" />
