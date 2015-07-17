@@ -10,7 +10,7 @@ namespace Eddn.Listener
     public class EddnListener : IEddnListener
     {
         protected readonly string Endpoint;
-        protected Action<string> LogMethod;
+        protected Action<string> LogMethod = message => { };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EddnListener"/> class.
@@ -90,18 +90,15 @@ namespace Eddn.Listener
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <param name="cancellationAndTimeOutSeconds">The cancellation and time out seconds.</param>
         /// <returns>The management thread as a task.</returns>
-        public void BeginListener(Action<string> callback, CancellationToken cancellationToken = default(CancellationToken), int cancellationAndTimeOutSeconds = 30)
+        public Task BeginListener(Action<string> callback, CancellationToken cancellationToken = default(CancellationToken), int cancellationAndTimeOutSeconds = 30)
         {
-            Task.Run(async () =>
+            return Task.Run(async () =>
             {
                 using (var ztx = new ZContext())
                 using (var subscriber = new ZSocket(ztx, ZSocketType.SUB))
                 {
                     subscriber.Subscribe("");                    
                     subscriber.ReceiveTimeout = TimeSpan.FromSeconds(cancellationAndTimeOutSeconds);
-
-
-                    LogMethod("Connected and subscribed.");
 
                     while (!cancellationToken.IsCancellationRequested)
                     {
