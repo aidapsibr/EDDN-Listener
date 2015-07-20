@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -97,7 +98,9 @@ namespace Eddn.Listener
                 using (var ztx = new ZContext())
                 using (var subscriber = new ZSocket(ztx, ZSocketType.SUB))
                 {
-                    subscriber.Subscribe("");                    
+                    var callbackTasks = new List<Task>();
+
+                    subscriber.Subscribe("");
                     subscriber.ReceiveTimeout = TimeSpan.FromSeconds(cancellationAndTimeOutSeconds);
 
                     while (!cancellationToken.IsCancellationRequested)
@@ -106,16 +109,18 @@ namespace Eddn.Listener
                         var message = await ReceiveMessage(subscriber, cancellationToken);
 
                         if (message != null)
-                            Task.Run(() =>
+                            callbackTasks.Add(Task.Run(() =>
                              {
                                  LogMethod("Found message, activating callback.");
                                  callback(message);
-                             }, cancellationToken).FireAndForget();
+                             }, cancellationToken));
                     }
 
                     subscriber.Disconnect(Endpoint);
                     subscriber.Close();
                     subscriber.Dispose();
+
+                    await Task.WhenAll(callbackTasks);
                 }
             }, cancellationToken);
         }
