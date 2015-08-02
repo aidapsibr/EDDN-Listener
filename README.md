@@ -6,7 +6,7 @@ Connects to [EDDN (Elite:Dangerous Data Network)](https://github.com/jamesremusc
 
 This is an extremely easy way to get started with EDDN in C#. 
 
-The operations are fully TPL (Task-Parallel Library) threaded and async, as such make sure the main thread lives on after calling the BeginListener (Thread.Sleep(5000000) for instance).
+The operations are fully TPL (Task-Parallel Library) threaded and async, as such make sure the main thread lives on after calling the BeginListener.
 
 
 ```csharp
@@ -14,5 +14,5 @@ EddnListener.Create()
   .AddLogMethod(Console.WriteLine)
   .BeginListener((message) => Console.WriteLine(message));
   
-Thread.Sleep(500000)  //This is only a holder for the main thread, only necessary in console apps that do nothing else.
+Console.ReadLine();  //This is only a holder for the main thread, only necessary in console apps that do nothing else.
 ```
